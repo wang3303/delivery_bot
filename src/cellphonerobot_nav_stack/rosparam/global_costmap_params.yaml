@@ -1,0 +1,8 @@
+global_costmap:
+  global_frame: /map
+  robot_base_frame: base_link
+  update_frequency: 0.1
+  #publish_frequency: 0
+  transform_tolerance: 0.7
+  rolling_window: false
+  static_map: true # change to true if using an exisitng map or a map server

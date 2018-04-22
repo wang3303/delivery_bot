@@ -1,0 +1,16 @@
+<?xml version="1.0"?>
+
+<launch>
+  <node name="map_server" pkg="map_server" type="map_server" args="$(find ros_cellphonerobot)/map/lab.yaml" output="screen"/>
+  <node pkg="cellphonerobot_nav_stack" name="location_decoder" type="location_decoder" output="screen"/>
+  <node pkg="cellphonerobot_nav_stack" name="move_base_updates" type="move_base_updates.py" output="screen"/>
+  <node pkg="move_base" type="move_base" respawn="true" name="move_base" output="screen">
+	<rosparam file="$(find cellphonerobot_nav_stack)/rosparam/location_points.yaml" command="load" />
+    <rosparam file="$(find cellphonerobot_nav_stack)/rosparam/costmap_common_params.yaml" command="load" ns="global_costmap" />
+    <rosparam file="$(find cellphonerobot_nav_stack)/rosparam/costmap_common_params.yaml" command="load" ns="local_costmap" />
+    <rosparam file="$(find cellphonerobot_nav_stack)/rosparam/local_costmap_params.yaml" command="load" />
+    <rosparam file="$(find cellphonerobot_nav_stack)/rosparam/global_costmap_params.yaml" command="load" />
+    <rosparam file="$(find cellphonerobot_nav_stack)/rosparam/base_local_planner_params.yaml" command="load" />
+    <param name="controller_frequency" value="1.8"/>
+  </node>
+</launch>

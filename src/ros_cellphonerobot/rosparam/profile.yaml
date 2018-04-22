@@ -1,0 +1,9 @@
+actiondic: {w: forward, s: stop, a: left, d: right, freestyle: freestyle, f: freestyle}
+# {event name(published): function(name defined in ),...}
+alert_distance: 20
+# motors [IN1, IN2, EN]
+motor: {rpid_velocity: [18,10,22,2,3], lpid_velocity: [17,4,27,15,14], dutycycle: 100}
+# defaut execution time for each action, but the action could be preempted before exe_time ends
+exe_time: 3
+# Ultrasonic[max_distance(cm),min_distance(cm) pin:[echo=17, trigger=18]]
+ultrasonic: {max_distance: 400, min_distance: 2, pin: [23,24]}

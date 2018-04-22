@@ -1,0 +1,12 @@
+<launch>
+
+  <!--
+  This needs to move to robot.launch.
+  -->
+  
+  <node pkg="xv_11_laser_driver" type="neato_laser_publisher" name="xv_11_node" output="screen">
+    <param name="port" value="/dev/ttyACM0" />
+    <param name="firmware_version" value="2" />
+    <param name="frame_id" value="laser" />
+  </node>
+</launch>

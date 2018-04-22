@@ -1,0 +1,75 @@
+<launch>
+	<arg name="loc_machine_name" />
+	<arg name="loc_machine_address" />
+	<arg name="loc_machine_user" />
+	<arg name="loc_default" />
+		
+	<arg name="rem_machine_name" />
+    <arg name="rem_machine_address" />
+    <arg name="rem_machine_user" />
+    <arg name="rem_machine_env_loader" />
+
+	<machine name="$(arg loc_machine_name)" address="$(arg loc_machine_address)" default="$(arg loc_default)" user="$(arg loc_machine_user)" />
+    <machine name="$(arg rem_machine_name)" address="$(arg rem_machine_address)" user="$(arg rem_machine_user)" env-loader="$(arg rem_machine_env_loader)" password="q1w2e3r4"/>
+        
+    <!--
+    <node machine="$(arg rem_machine_name)" pkg="differential_drive" name="virtual_joystick" type="virtual_joystick.py" />
+    -->
+    
+    
+
+    <node machine="$(arg loc_machine_name)" pkg="differential_drive" type="pid_velocity.py" name="lpid_velocity">
+        <remap from="wheel" to="lwheel"/>
+        <remap from="motor_cmd" to="lmotor_cmd"/>
+        <remap from="wheel_vtarget" to="lwheel_vtarget"/>
+        <remap from="wheel_vel" to="lwheel_vel"/>
+        <remap from="wheel_distance" to="lwheel_distance"/>
+        <rosparam param="Kp">40</rosparam>
+        <rosparam param="Ki">18</rosparam>
+        <rosparam param="Kd">0</rosparam>
+        <rosparam param="windup">0.1</rosparam>
+        <rosparam param="out_min">-100</rosparam>
+        <rosparam param="out_max">100</rosparam>
+        <rosparam param="rate">8</rosparam>
+        <rosparam param="timeout_ticks">2</rosparam>
+        <rosparam param="rolling_pts">3</rosparam>
+        <rosparam param="ticks_meter">2123</rosparam>
+    </node>
+    <node machine="$(arg loc_machine_name)" pkg="differential_drive" type="pid_velocity.py" name="rpid_velocity" output="screen">
+        <remap from="wheel" to="rwheel"/>
+        <remap from="motor_cmd" to="rmotor_cmd"/>
+        <remap from="wheel_vtarget" to="rwheel_vtarget"/>
+        <remap from="wheel_distance" to="rwheel_distance"/>
+        <remap from="wheel_vel" to="rwheel_vel"/>
+        <rosparam param="ticks_meter">2214</rosparam>
+        <rosparam param="Kp">40</rosparam>
+        <rosparam param="Ki">18</rosparam>
+        <rosparam param="Kd">0</rosparam>
+        <rosparam param="windup">0.1</rosparam>
+        <rosparam param="out_min">-100</rosparam>
+        <rosparam param="out_max">100</rosparam>
+        <rosparam param="rate">8</rosparam>
+        <rosparam param="timeout_ticks">2</rosparam>
+        <rosparam param="rolling_pts">3</rosparam>
+    </node>
+    
+<!-- 	<node machine="$(arg loc_machine_name)" pkg="differential_drive" name="wheel_scaler" type="wheel_scaler.py" /> -->
+<!-- 	<node machine="$(arg loc_machine_name)" pkg="differential_drive" name="wheel_loopback" type="wheel_loopback.py" />
+ -->
+    <node machine="$(arg loc_machine_name)" pkg="differential_drive" type="twist_to_motors.py" name="twist_to_motors" output="screen">
+        <rosparam param="base_width">0.185</rosparam>
+    </node>
+
+    
+    <node machine="$(arg loc_machine_name)" pkg="differential_drive" type="diff_tf.py" name="diff_tf">
+        <rosparam param="rate">50</rosparam>
+        <rosparam param="base_width">0.185</rosparam>
+    </node>
+    
+    
+    <!--
+    <param name="robot_description" textfile="$(find my_robot)/my_robot.urdf" />
+    <node machine="$(arg rem_machine_name)" pkg="rviz" type="rviz" name="rviz" output="screen"/>
+    -->
+
+</launch>

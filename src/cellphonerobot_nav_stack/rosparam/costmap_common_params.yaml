@@ -1,0 +1,33 @@
+plugins:
+  - {name: static_map, type: "costmap_2d::StaticLayer"}
+  - {name: obstacle_layer, type: "costmap_2d::ObstacleLayer"}
+  - {name: inflation_layer, type: "costmap_2d::InflationLayer"}
+
+publish_frequency: 1.0
+footprint: [[-0.13, -0.11], [-0.13, 0.11], [0.13, 0.11], [0.13, -0.11]]
+
+obstacle_layer:
+  enabled:              true
+  footprint_clearing_enabled: true
+  max_obstacle_height:  0.2
+  track_unknown_space:  false    #true needed for disabling global path planning through unknown space
+  obstacle_range: 1.0
+  raytrace_range: 1.5
+  observation_sources:  scan
+  scan:
+    data_type: LaserScan
+    topic: scan
+    marking: true
+    clearing: true
+    min_obstacle_height: 0.0
+    max_obstacle_height: 0.2
+    sensor_frame: laser
+
+inflation_layer:
+  enabled:              true
+  cost_scaling_factor:  5  # exponential rate at which the obstacle cost drops off (default: 10)
+  inflation_radius:     0.5  # max. distance from an obstacle at which costs are incurred for planning paths.
+
+static_layer:
+  enabled: false
+  map_topic: /map

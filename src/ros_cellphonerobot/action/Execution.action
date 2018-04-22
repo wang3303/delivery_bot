@@ -1,0 +1,8 @@
+duration time_to_wait
+string action
+---
+uint8 flag
+---
+duration time_elapsed
+duration time_remain
+
