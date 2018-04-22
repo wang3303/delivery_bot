@@ -1,0 +1,16 @@
+<launch>
+
+  <node
+    name="talker"
+    pkg="ros_cellphonerobot"
+    type="talker.py"
+    output="screen"
+  />
+  <node
+    name="diff_tf"
+    pkg="differential_drive"
+    type="diff_tf.py"
+    output="screen"
+  />
+
+</launch>

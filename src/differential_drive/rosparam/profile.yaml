@@ -1,0 +1,9 @@
+Kp: 0
+Ki: 0
+Kd: 0
+out_min: 0
+out_max: 100
+rate: 30
+timeout_ticks: 4
+rolling_pts: 2
+base_width: 185
