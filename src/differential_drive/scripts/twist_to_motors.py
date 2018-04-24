@@ -60,7 +60,6 @@ class TwistToMotors():
     
         ###### main loop  ######
         while not rospy.is_shutdown():
-        
             while not rospy.is_shutdown() and self.ticks_since_target < self.timeout_ticks:
                 self.spinOnce()
                 r.sleep()
@@ -69,10 +68,7 @@ class TwistToMotors():
     #############################################################
     def spinOnce(self):
     #############################################################
-    
-        # dx = (l + r) / 2
-        # dr = (r - l) / w
-            
+        # calculate and publish left and right wheel velocity
         self.right = 1.0 * self.dx + self.dr * self.w / 2 
         self.left = 1.0 * self.dx - self.dr * self.w / 2
         # rospy.loginfo("publishing: (%d, %d)", left, right) 
@@ -86,6 +82,7 @@ class TwistToMotors():
     def twistCallback(self,msg):
     #############################################################
         # rospy.loginfo("-D- twistCallback: %s" % str(msg))
+        # update current velocity
         self.ticks_since_target = 0
         self.dx = msg.linear.x
         self.dr = msg.angular.z

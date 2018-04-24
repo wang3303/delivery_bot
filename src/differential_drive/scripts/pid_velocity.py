@@ -74,7 +74,14 @@ class PidVelocity():
         self.vel_threshold = rospy.get_param('~vel_threshold', 0.005)
         self.encoder_min = rospy.get_param('encoder_min', -32768)
         self.encoder_max = rospy.get_param('encoder_max', 32768)
+        # This is the minimum control effort.
         self.deadband = rospy.get_param('~dead_band',8)
+        # If a reading is greater than wheel_high_wrap and the next 
+        # reading is less than wheel_low_wrap, then the reading has 
+        # wrapped around in the positive direction, and the odometry 
+        # will be calculated appropriately. The same concept applies 
+        # for the negative direction.
+        ## This strategy uses less space to store encoder readings.
         self.encoder_low_wrap = rospy.get_param('wheel_low_wrap', (self.encoder_max - self.encoder_min) * 0.3 + self.encoder_min )
         self.encoder_high_wrap = rospy.get_param('wheel_high_wrap', (self.encoder_max - self.encoder_min) * 0.7 + self.encoder_min )
         self.prev_vel = [0.0] * self.rolling_pts
@@ -91,10 +98,11 @@ class PidVelocity():
         
         self.motor_param = rospy.get_param("/motor")
         motor_pin = self.motor_param[self.nodename[1:]]#rospy.get_param('/execution/'+motor[0])
+        # init DCmotor object
         self.DCmotor = DCmotor(motor_pin[0],motor_pin[1],motor_pin[2],motor_pin[3],motor_pin[4],use_encoder=True,use_motor=True)
-        # self.DCmotor = DCmotor(18,10,22,2,3,use_encoder=True,use_motor=False)
     
     def encoder_reading(self,):
+        # make suare encoder reading is within [encoder_min, encoder_max]
         encoder_buffer = self.DCmotor.request_encoder_ticks()
         while encoder_buffer >= self.encoder_max-1:
             encoder_buffer -= (2*self.encoder_max - 1)
@@ -125,24 +133,25 @@ class PidVelocity():
         self.vel = 0.0
         
         # only do the loop if we've recently recieved a target velocity message
-        while not rospy.is_shutdown(): #and self.ticks_since_target < self.timeout_ticks:
+        while not rospy.is_shutdown(): 
             self.calcVelocity()
             self.doPid()
 
             m_cmd = self.motor
             if abs(self.motor) < 0.01:
+                # Stop motor is control effort is negligible
                 m_cmd = 0
             if m_cmd > .3:
                 m_cmd = max(m_cmd,self.deadband)
             elif m_cmd < -.3:
                 m_cmd = min(m_cmd,-self.deadband)
             self.DCmotor.change_duty_cycle(m_cmd)
-            # self.ticks_since_target += 1
+            self.ticks_since_target += 1
             if self.ticks_since_target < self.timeout_ticks:
+                # if not timeout
             	self.pub_motor.publish(m_cmd)
             self.r.sleep()
-            #     self.pub_motor.publish(0)
-            # This can be wrong since time is not updated
+
             
             
      #####################################################
@@ -169,15 +178,13 @@ class PidVelocity():
 	                    rospy.logdebug("-D- %s cur_vel < self.vel" % self.nodename)
 	                    # we know we're slower than what we're currently publishing as a velocity
 	                    self.appendVel(cur_vel)
-	                    self.calcRollingVel()
 	            
 	        else:
 	            # we received a new wheel value
 	            cur_vel = (self.wheel_latest - self.wheel_prev) / self.dt
-	            # Dont update if there is an outsider
+	            # Don't update if there is an outsider
 	            if cur_vel < self.top_vel:	
 	            	self.appendVel(cur_vel)
-	            	self.calcRollingVel()
 	            rospy.logdebug("-D- %s **** wheel updated vel=%0.3f **** " % (self.nodename, self.vel))
 	            self.wheel_prev = self.wheel_latest
 	        self.pub_vel.publish(self.vel)
@@ -189,17 +196,10 @@ class PidVelocity():
     #####################################################
     def appendVel(self, val):
     #####################################################
+        # append the curent velocity to dynamce moving window recording recent velocity
         self.vel = self.vel+(val-self.prev_vel[0])/self.rolling_pts
         self.prev_vel.append(val)
         del self.prev_vel[0]
-        
-    #####################################################
-    def calcRollingVel(self):
-    #####################################################
-        pass
-        # p = array(self.prev_vel)
-        # # # self.vel = p.mean()
-        # self.vel = np.median(p)
 
         
     #####################################################
@@ -209,26 +209,19 @@ class PidVelocity():
         pid_dt_duration = now  - self.prev_pid_time
         pid_dt = pid_dt_duration.to_sec()
         self.error = self.target - self.vel
+        # Do not integrate the integral error if error is to large
         if self.error < self.windup:
             self.integral = self.integral + (self.error * pid_dt)
         rospy.loginfo("i = i + (e * dt):  %0.3f = %0.3f + (%0.3f * %0.3f)" % (self.integral, self.integral, self.error, pid_dt))
         self.derivative = (self.error - self.previous_error) / pid_dt
         self.previous_error = self.error
-    
+        # calculate control effort
         self.motor = (self.Kp* self.error) + (self.Ki * self.integral) + (self.Kd * self.derivative)+ self.target*self.feedforward
     	rospy.loginfo(":::::Kp  %0.3f Ki %0.3f kd %0.3f" % (self.Kp, self.Ki, self.Kd))
+        
+        # saturate control effort
         self.motor = min(self.motor,self.out_max)
         self.motor = max(self.motor,self.out_min)
-
-        # if self.motor > self.out_max:
-        #     self.motor = self.out_max
-        #     self.integral = self.integral - (self.error * pid_dt)
-        # if self.motor < self.out_min:
-        #     self.motor = self.out_min
-        #     self.integral = self.integral - (self.error * pid_dt)
-      
-        # if (self.target == 0):
-        #     self.motor = 0
 
         rospy.logdebug("vel:%0.2f tar:%0.2f err:%0.2f int:%0.2f der:%0.2f ## motor:%d " % 
                       (self.vel, self.target, self.error, self.integral, self.derivative, self.motor))
@@ -236,22 +229,10 @@ class PidVelocity():
     
 
 
-    # #####################################################
-    # def wheelCallback(self, msg):
-    # ######################################################
-    #     enc = msg.data
-    #     if (enc < self.encoder_low_wrap and self.prev_encoder > self.encoder_high_wrap) :
-    #         self.wheel_mult = self.wheel_mult + 1
-            
-    #     if (enc > self.encoder_high_wrap and self.prev_encoder < self.encoder_low_wrap) :
-    #         self.wheel_mult = self.wheel_mult - 1
-    #     self.wheel_latest = 1.0 * (enc + self.wheel_mult * (self.encoder_max - self.encoder_min)) / self.ticks_per_meter 
-    #     rospy.logdebug("-D- %s wheelCallback msg.data= %0.3f wheel_latest = %0.3f mult=%0.3f" % (self.nodename, enc, self.wheel_latest, self.wheel_mult))
-    #     self.prev_encoder = enc
-
     #####################################################
     def wheel_encoder(self, ):
     ######################################################
+        # wrap the encoder between encoder_low_wrap and encoder_high_wrap
         enc = self.encoder_reading()
         if (enc < self.encoder_low_wrap and self.prev_encoder > self.encoder_high_wrap) :
             self.wheel_mult = self.wheel_mult + 1
@@ -266,9 +247,9 @@ class PidVelocity():
     ######################################################
     def targetCallback(self, msg):
     ######################################################
+        # Update reference velocity and zero the timeout tick counter  
         self.target = msg.data
         self.ticks_since_target = 0
-        # rospy.logdebug("-D- %s targetCallback " % (self.nodename))
     
     
 if __name__ == '__main__':

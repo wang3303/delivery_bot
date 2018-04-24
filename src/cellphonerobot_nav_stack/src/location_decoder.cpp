@@ -5,14 +5,17 @@
 #include <string>
 #include <std_msgs/String.h>
 #include <iostream>
-
+/*
+This script is for registering a action client and send a goal message
+to move_base action server when receving a goal location.
+*/
 typedef actionlib::SimpleActionClient<move_base_msgs::MoveBaseAction> MoveBaseClient;
 
 void send_goal(const std_msgs::String::ConstPtr& msg){
   //tell the action client that we want to spin a thread by default
   MoveBaseClient ac("move_base", true);	
   ROS_INFO("MoveBaseClient set up.");
-  ////wait for the action server to come up
+  //wait for the action server to come up
   while(!ac.waitForServer(ros::Duration(5.0))){
     ROS_INFO("Waiting for the move_base action server to come up");
   }

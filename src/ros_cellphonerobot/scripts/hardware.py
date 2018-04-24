@@ -14,7 +14,9 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
 class DCmotor:
-	def __init__(self,INA1=None,INA2=None,EN=None,ENCODA=None,ENCODB=None,use_encoder=False,use_motor=False):
+	# This is an extended class consisting of a 2-channel encoder and 
+	# input to L298N. Set use_encoder to False if you do not have a encoder.
+	def __init__(self,INA1=None,INA2=None,EN=None,ENCODA=None,ENCODB=None,use_encoder=False,use_motor=True):
 		self._INA1 = INA1
 		self._INA2 = INA2
 		self._EN = EN
@@ -45,13 +47,12 @@ class DCmotor:
 			self.last_delta = 0
 
 	def rotation_seq(self,):
+		# getting encoder state
 		a,b = GPIO.input(self._ENCODA), GPIO.input(self._ENCODB)
 		return (a^b) | b << 1
-		
-		
 
 	def change_duty_cycle(self,duty=0):
-		# self.pwm.ChangeDutyCycle(abs(duty))
+		# change direction pins only if the direction is changed 
 		if (duty>=0) == self.direction: 
 			self.pwm.ChangeDutyCycle(abs(duty))
 		else: 
@@ -84,17 +85,6 @@ class DCmotor:
 		return GPIO.input(self._ENCODA), GPIO.input(self._ENCODB)
 	
 	def update_encoder_ticks(self, channel):
-		# delta = 0
-		# seq = self.rotation_seq()
-		# if seq != self.seq:
-		# 	delta = (seq - self.seq)%4
-		# 	if delta == 3:
-		# 		delta = -1
-		# 	elif delta == 2:
-		# 		delta = int(math.copysign(delta,self.last_delta))
-		# 	self.last_delta = delta
-		# 	self.seq = seq
-		# self._ticks += delta
 		if (GPIO.input(self._ENCODB) != GPIO.input(self._ENCODA)):
 			self._ticks += 1
 		else:

@@ -76,7 +76,6 @@ class DiffTf:
         
         #### parameters #######
         self.rate = rospy.get_param('~rate',10)  # the rate at which to publish the transform
-        # self.ticks_meter = float(rospy.get_param('ticks_meter', 50))  # The number of wheel encoder ticks per meter of travel
         self.base_width = float(rospy.get_param('~base_width', 0.245)) # The wheel base width in meters
         
         self.base_frame_id = rospy.get_param('~base_frame_id','base_link') # the name of the base frame of the robot
@@ -87,18 +86,6 @@ class DiffTf:
         self.encoder_low_wrap = rospy.get_param('wheel_low_wrap', (self.encoder_max - self.encoder_min) * 0.3 + self.encoder_min )
         self.encoder_high_wrap = rospy.get_param('wheel_high_wrap', (self.encoder_max - self.encoder_min) * 0.7 + self.encoder_min )
  
-        # self.t_delta = rospy.Duration(1.0/self.rate)
-        # self.t_next = rospy.Time.now() + self.t_delta
-        
-        # internal data
-        # self.enc_left = None        # wheel encoder readings
-        # self.enc_right = None
-        # self.left = 0               # actual values coming back from robot
-        # self.right = 0
-        # self.lmult = 0
-        # self.rmult = 0
-        # self.prev_lencoder = 0
-        # self.prev_rencoder = 0
         self.x = 0                  # position in xy plane 
         self.y = 0
         self.th = 0
@@ -143,20 +130,6 @@ class DiffTf:
     def update(self):
     #############################################################################
         now = rospy.Time.now()
-        # if now > self.t_next:
-        #     elapsed = now - self.then
-        #     self.then = now
-        #     elapsed = elapsed.to_sec()
-            
-        #     # calculate odometry
-        #     if self.enc_left == None:
-        #         d_left = 0
-        #         d_right = 0
-        #     else:
-        #         d_left = (self.left - self.enc_left) / self.ticks_meter
-        #         d_right = (self.right - self.enc_right) / self.ticks_meter
-        #     self.enc_left = self.left
-        #     self.enc_right = self.right
         if self.d_left_update and self.d_right_update and self.v_left_update and self.v_right_update:
             # distance traveled is the average of the two wheels 
             d = ( self.d_left + self.d_right ) / 2
@@ -208,39 +181,19 @@ class DiffTf:
             self.d_left_update = True
             self.d_right_update = True
 
-            
-            
-
-
     #############################################################################
     def lwheelCallback(self, msg):
     #############################################################################
+    # update left wheel velocity
         self.v_left_update = True
         self.v_left = msg.data
-        # enc = msg.data
-        # if (enc < self.encoder_low_wrap and self.prev_lencoder > self.encoder_high_wrap):
-        #     self.lmult = self.lmult + 1
-            
-        # if (enc > self.encoder_high_wrap and self.prev_lencoder < self.encoder_low_wrap):
-        #     self.lmult = self.lmult - 1
-            
-        # self.left = 1.0 * (enc + self.lmult * (self.encoder_max - self.encoder_min)) 
-        # self.prev_lencoder = enc
         
     #############################################################################
     def rwheelCallback(self, msg):
     #############################################################################
+    # update right wheel velocity
         self.v_right_update = True
         self.v_right = msg.data
-        # enc = msg.data
-        # if(enc < self.encoder_low_wrap and self.prev_rencoder > self.encoder_high_wrap):
-        #     self.rmult = self.rmult + 1
-        
-        # if(enc > self.encoder_high_wrap and self.prev_rencoder < self.encoder_low_wrap):
-        #     self.rmult = self.rmult - 1
-            
-        # self.right = 1.0 * (enc + self.rmult * (self.encoder_max - self.encoder_min))
-        # self.prev_rencoder = enc
 
 #############################################################################
 #############################################################################
