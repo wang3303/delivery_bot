@@ -1,5 +1,4 @@
 # Cellphone robot ROS Package quick tutorial
-Welcome to cellphone robot project! This is part of [Project Cellphone robot](https://github.com/AGKhalil/Cellphone_Robot/wiki) and is mainly focused on the some extended functionalities, hardware control, as well as  message-passing between the android application and the ROS system resided on any linux system. In our project we decide to use [Raspberry Pi 3 Model B](https://www.raspberrypi.org/products/raspberry-pi-3-model-b/), a single-board computer with considerate computation power. Read [wiki](https://github.com/wang3303/ros_cellphonerobot/wiki) for concrete details.
 ## Structure of Package
 ![img](https://github.com/wang3303/ros_cellphonerobot/blob/master/ROS.png)
 ## Interaction with Android
