@@ -9,7 +9,11 @@ for concrete details.
 ## Interaction with Android
 ![img]()
 
-## Step 0: Understand some basics
+## Step 0: Understand [some basics](https://github.com/wang3303/delivery_bot/wiki/Basics) and compile the package
+```commandline
+$ cd ~/catkin_ws
+$ catkin_make -DCMAKE_BUILD_TYPE=Release -j1
+```
 
 
 ## Step 1: Configure laser scanner
@@ -52,12 +56,12 @@ If you publish your message to `/scan`, you should be able to see the lidar read
 
 ## Step 2: Configure your motors, encoders, and PID controller
 We provide two options for converting reference velocity published to topic `\cmd_vel` to actual motions of robots: 
-* [a high-level ROS-package](): This package encoder reading and output control effort through DCmotor class defined in `hardware.py`.
+* [a high-level ROS-package](https://github.com/wang3303/delivery_bot/wiki/Diferential-drive): This package encoder reading and output control effort through DCmotor class defined in `hardware.py`.
     
     *Note: The system will be susceptible to delay and timeout. I would recommend use external hardware with real ISR to get
     encoder readings and output PWM signal. However, it is easier to debug in ROS*
 
-* [ROS arduino bridge](): We use arduino UNO to run PID control for motors and let it communicate with ROS using serial communication.
+* [ROS arduino bridge](https://github.com/wang3303/delivery_bot/wiki/ROS-arduino): We use arduino UNO to run PID control for motors and let it communicate with ROS using serial communication.
 If you decide not to use
 
 *Note: If you decide to use your own package, you should also output [Odometry Message](http://docs.ros.org/api/nav_msgs/html/msg/Odometry.html)* and tf from odom to
@@ -76,7 +80,7 @@ Open `ros_cellphonerobot/launch/slam.launch` and configure your hardware nodes.
 
 Then run `roslaunch ros_cellphonerobot slam.launch` in your terminal.
 
-Tweak [parameter setting]() in your `mapping_default.launch`. 
+Tweak [parameter setting](https://github.com/wang3303/delivery_bot/wiki/SLAM) in your `mapping_default.launch`. 
 
 Run Rviz to make sure SLAM is generating desired occupancy grid in `\maphector`. After that, start the `key_publisher`
 to move your robot around.
@@ -96,7 +100,7 @@ Change the map to be published in cellphonerobot/launch/move_base.launch
 
 Try running `roslaunch ros_cellphonerobot slam.launch` in your terminal.
 
-Tweak your [parameter setting]().
+Tweak your [parameter setting](https://github.com/wang3303/delivery_bot/wiki/Navigation).
 
 * Start rviz
 
