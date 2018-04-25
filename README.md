@@ -106,7 +106,7 @@ Change the map to be published in cellphonerobot/launch/move_base.launch
 
 Try running `roslaunch ros_cellphonerobot slam.launch` in your terminal.
 
-Tweak your [parameter setting](https://github.com/wang3303/delivery_bot/wiki/Navigation).
+Tweak your [parameter setting](http://kaiyuzheng.me/documents/navguide.pdf).
 
 * Start rviz
 
