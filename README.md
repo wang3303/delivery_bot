@@ -4,6 +4,10 @@ Welcome to cellphone robot project! This is part of [Project Cellphone robot](ht
 , a single-board computer with considerate computation power. Read [wiki](https://github.com/wang3303/delivery_bot/wiki)
 for concrete details.
 
+Out robot is able to accomplish the following task:
+* Build an map while moving around
+* Receive goal location from android app and navigate to the goal based on the map built
+
 ## Structure of Package
 ![img]()
 ## Interaction with Android
@@ -14,6 +18,8 @@ for concrete details.
 $ cd ~/catkin_ws
 $ catkin_make -DCMAKE_BUILD_TYPE=Release -j1
 ```
+If you plan to run your packages on multi-machines, read [start remote node/rviz](https://github.com/wang3303/delivery_bot/wiki/remote-machine)
+and [start launch file for remote machine](https://github.com/wang3303/delivery_bot/wiki/remote-launch)
 
 
 ## Step 1: Configure laser scanner
