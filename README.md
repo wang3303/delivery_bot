@@ -8,10 +8,10 @@ Out robot is able to accomplish the following task:
 * Build an map while moving around
 * Receive goal location from android app and navigate to the goal based on the map built
 
-## Structure of Package
-![img]()
-## Interaction with Android
-![img]()
+## SLAM: Structure of System
+![img](https://github.com/wang3303/delivery_bot/blob/master/slam.png)
+## Navigation: Structure of System
+![img](https://github.com/wang3303/delivery_bot/blob/master/navigation.png)
 
 ## Step 0: Understand [some basics](https://github.com/wang3303/delivery_bot/wiki/Basics) and compile the package
 ```commandline
