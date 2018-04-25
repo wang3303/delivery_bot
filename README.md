@@ -8,6 +8,10 @@ Our robot is able to accomplish the following task:
 * Build an map while moving around
 * Receive goal location from android app and navigate to the goal based on the map built
 
+The android app can be found [here](https://github.com/AGKhalil/Cellphone_Robot/tree/master).
+
+## Demo Video
+[![Demo Video](https://github.com/AGKhalil/Cellphone_Robot/blob/master/wiki_images/VideoSS.png)](https://youtu.be/IUkcgtFX2zM)
 ## SLAM: Structure of System
 ![img](https://github.com/wang3303/delivery_bot/blob/master/slam.png)
 ## Navigation: Structure of System
